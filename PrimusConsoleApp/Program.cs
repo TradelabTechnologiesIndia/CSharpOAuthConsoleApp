@@ -20,7 +20,7 @@ namespace PrimusConsoleApp
         private static string AppID = "appid"; // Get from your broker
         private static string AppSecret = "app_secret"; // Get from your broker
         private static string redirect_url = "http://127.0.0.1/";  // You can create your own and ask your broker to update
-        private static string base_url = "https://fintrader.myfindoc.com/"; // Get from your broker;it will be in the form of https://api.example.com
+        private static string base_url = "https://example.com/"; // Get from your broker;it will be in the form of https://api.example.com
         private static string scope = "orders holdings";
         private static readonly object _lock = new object();
         private static string url = null;
@@ -33,6 +33,7 @@ namespace PrimusConsoleApp
 
         static async Task MainAsync(string[] args)
         {
+            base_url = base_url.Trim('/', '\\');
             url = base_url + "/oauth2/auth?scope=" + scope + "&state=%7B%22param%22:%22value%22%7D&redirect_uri=" + redirect_url + "&response_type=code&client_id=" + AppID;
 
             Console.WriteLine("Press any key to navigate to \n" + url + "\n");
