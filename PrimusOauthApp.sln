@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.421
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimusOauthApp", "PrimusConsoleApp\PrimusOauthApp.csproj", "{8F680772-E6B2-4164-B987-A8C81D4994DE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Primus", "Primus\Primus.csproj", "{BC1857E2-E4C1-4836-8034-A5771F868B60}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8F680772-E6B2-4164-B987-A8C81D4994DE}.Debug|x86.ActiveCfg = Debug|x86
+		{8F680772-E6B2-4164-B987-A8C81D4994DE}.Debug|x86.Build.0 = Debug|x86
+		{8F680772-E6B2-4164-B987-A8C81D4994DE}.Release|x86.ActiveCfg = Release|x86
+		{8F680772-E6B2-4164-B987-A8C81D4994DE}.Release|x86.Build.0 = Release|x86
+		{BC1857E2-E4C1-4836-8034-A5771F868B60}.Debug|x86.ActiveCfg = Debug|x86
+		{BC1857E2-E4C1-4836-8034-A5771F868B60}.Debug|x86.Build.0 = Debug|x86
+		{BC1857E2-E4C1-4836-8034-A5771F868B60}.Release|x86.ActiveCfg = Release|x86
+		{BC1857E2-E4C1-4836-8034-A5771F868B60}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CB0D2A58-0BA8-4A51-910F-E08B97C80360}
+	EndGlobalSection
+EndGlobal
