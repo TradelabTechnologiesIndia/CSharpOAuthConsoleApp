@@ -50,7 +50,7 @@ namespace Primus
 
         #endregion
 
-        public MarketTicker(string baseurl, bool reconnect = true, int reconnectInterval = 5, int reconnectTries = 50, bool debug = false)
+        public MarketTicker(string baseurl, bool reconnect = true, int reconnectInterval = 5, int reconnectTries = 5000, bool debug = false)
         {
             _debug = debug;
             _isReconnect = reconnect;
