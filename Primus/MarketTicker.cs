@@ -187,7 +187,21 @@ namespace Primus
             foreach (var itemTuple in exchangeToken)
             {
                 var key = itemTuple.Item1 + "_" + itemTuple.Item2;
-                subscriptionList.Add(" [" + itemTuple.Item1 + ", " + itemTuple.Item2 + " ]");
+                if (_subscriptionMap.ContainsKey("mw"))
+                {
+                    if (_subscriptionMap["mw"].ContainsKey(key))
+                        _subscriptionMap["mw"][key] += 1;
+                    else
+                    {
+                        _subscriptionMap["mw"][key] = 1;
+                        subscriptionList.Add(" [" + itemTuple.Item1 + ", " + itemTuple.Item2 + " ]");
+                    }
+                }
+                else
+                {
+                    _subscriptionMap["mw"] = new Dictionary<string, int> { [key] = 1 };
+                    subscriptionList.Add(" [" + itemTuple.Item1 + ", " + itemTuple.Item2 + " ]");
+                }
             }
             var subscriptionItem = string.Join(", ", subscriptionList);
             var msg = "{\"a\": \"subscribe\",\"v\":[" + subscriptionItem + "], \"m\": \"marketdata\"}";
