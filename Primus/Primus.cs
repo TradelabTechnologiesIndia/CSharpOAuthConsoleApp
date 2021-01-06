@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -16,6 +18,7 @@ namespace Primus
         private static PrimusApi _instance;
         private HttpClient _httpClient;
         private string _apiUrl = "";
+        private static string path = string.Empty;
 
         public struct Question_Ans
         {
@@ -55,6 +58,11 @@ namespace Primus
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
             _httpClient.Timeout = TimeSpan.FromSeconds(240);
+            path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\ApiLog.txt";
+            if(File.Exists(path))
+            {
+                File.Delete(path);
+            }
         }
 
         public static PrimusApi Instance(Uri baseurl)
@@ -76,6 +84,8 @@ namespace Primus
             int disclosedQty, decimal price, decimal triggerPrice, int market_protection_percentage,
             string product, string order_side, string validity, string orderType, string user_order_id,string device="web")
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             var values = new Dictionary<string, dynamic>
             {
                 {"exchange", exchange},
@@ -101,7 +111,9 @@ namespace Primus
                 byteContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
                 var response = await _httpClient.PostAsync(_apiUrl + _routeMap["PlaceOrder"], byteContent);
                 var responseString = await response.Content.ReadAsStringAsync();
-               // OnOrderReply(responseString);
+                stopwatch.Stop();
+                LogFile(_apiUrl + _routeMap["PlaceOrder"] + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+                // OnOrderReply(responseString);
                 return responseString;
             }
         }
@@ -110,6 +122,8 @@ namespace Primus
             int disclosedQty, decimal price, decimal triggerPrice, string oms_order_id,
             string product, string validity, string orderType)
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             var values = new Dictionary<string, dynamic>
             {
                 {"exchange", exchange},
@@ -131,112 +145,183 @@ namespace Primus
             byteContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
             var response = await _httpClient.PutAsync(_apiUrl + _routeMap["ModifyOrder"], byteContent);
             var responseString = await response.Content.ReadAsStringAsync();
+            stopwatch.Stop();
+            LogFile(_apiUrl + _routeMap["ModifyOrder"] + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+
             return responseString;
         }
 
         public async Task<string> CancelOrderAsync(string omsorderid, string client_id)
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             string values = "/" + omsorderid + "?client_id=" + client_id;
             var response = await _httpClient.DeleteAsync(_apiUrl + _routeMap["CancelOrder"] + values);
             var responseString = await response.Content.ReadAsStringAsync();
+            stopwatch.Stop();
+            LogFile(_apiUrl + _routeMap["CancelOrder"] + values + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+
             return responseString;
         }
 
 
         public async Task<string> PendingOrderBookAsync(string client_id)
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["PendingOrders"]+ client_id);
             var responseString = await response.Content.ReadAsStringAsync();
+            stopwatch.Stop();
+            LogFile(_apiUrl + _routeMap["PendingOrders"] + client_id + "  : " + stopwatch.ElapsedMilliseconds + "ms" );
             return responseString;
         }
         public async Task<string> CompletedOrderBookAsync(string client_id)
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             var url = (_apiUrl +_routeMap["CompletedOrders"] + client_id);
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["CompletedOrders"] + client_id);
             var responseString = await response.Content.ReadAsStringAsync();
+            stopwatch.Stop();
+            LogFile(_apiUrl + _routeMap["CompletedOrders"] + client_id + "  : " + stopwatch.ElapsedMilliseconds + "ms");
             return responseString;
         }
 
         public async Task<string> GetProfileAsync(string client_id)
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["Profile"] + client_id);
             var responseString = await response.Content.ReadAsStringAsync();
+            stopwatch.Stop();
+            LogFile(_apiUrl + _routeMap["Profile"] + client_id + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+
             return responseString;
         }
 
         public async Task<string> OrderHistoryAsync(string omsOrderId,string client_id)
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             var values = "/" + omsOrderId + "/history?client_id="+client_id;
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["OrderHistory"] +  values);
             var responseString = await response.Content.ReadAsStringAsync();
+            stopwatch.Stop();
+            LogFile(_apiUrl + _routeMap["OrderHistory"] + values + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+
             return responseString;
         }
 
         public async Task<string> TradesAsync(string client_id)
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["Trades"] + client_id);
             var responseString = await response.Content.ReadAsStringAsync();
+            stopwatch.Stop();
+            LogFile(_apiUrl + _routeMap["Trades"] + client_id + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+
             return responseString;
         }
 
         public async Task<string> DayPositionsAsync(string client_id)
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["DayPositions"] + client_id);
             var responseString = await response.Content.ReadAsStringAsync();
+            stopwatch.Stop();
+            LogFile(_apiUrl + _routeMap["DayPositions"] + client_id + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+
             return responseString;
         }
 
         public async Task<string> NetPositionsAsync(string client_id)
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["NetPositions"] + client_id);
             var responseString = await response.Content.ReadAsStringAsync();
+            stopwatch.Stop();
+            LogFile(_apiUrl + _routeMap["NetPositions"] + client_id + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+
             return responseString;
         }
 
 
         public async Task<string> HoldingsAsync(string client_id)
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["Holdings"] + client_id);
             var responseString = await response.Content.ReadAsStringAsync();
+            stopwatch.Stop();
+            LogFile(_apiUrl + _routeMap["Holdings"] + client_id + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+
             return responseString;
         }
 
         public async Task<string> CashAsync(string client_id)
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["Cash"] + client_id);
             var responseString = await response.Content.ReadAsStringAsync();
+            stopwatch.Stop();
+            LogFile(_apiUrl + _routeMap["Cash"] + client_id + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+
             return responseString;
         }
 
         public async Task<string> SearchAsync(string key)
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["Search"] + key);
             var responseString = await response.Content.ReadAsStringAsync();
+            stopwatch.Stop();
+            LogFile(_apiUrl + _routeMap["Search"] + key + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+
             return responseString;
         }
 
         public async Task<string> ScripinfoAsync(string exchange, string token)
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             string values = "/" + exchange + "?info=scrip&token=" + token;
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["Scripinfo"] + values);
             var responseString = await response.Content.ReadAsStringAsync();
+            stopwatch.Stop();
+            LogFile(_apiUrl + _routeMap["Scripinfo"] + values + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+
             //OnScripinfoReply(responseString);
             return responseString;
         }
 
         public async Task<string> MktdataAsync(string exchange, string segment,string symbol)
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             string values = "/" + exchange + "/" + segment+"?symbol=" + symbol;
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["MarketData"] + values);
             var responseString = await response.Content.ReadAsStringAsync();
+            stopwatch.Stop();
+            LogFile(_apiUrl + _routeMap["MarketData"] + values + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+
             //OnScripinfoReply(responseString);
             return responseString;
         }
 
         public async Task<string> SearchScript(string Keyword)
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["SearchScript"] + Keyword);
             var responseString = await response.Content.ReadAsStringAsync();
+            stopwatch.Stop();
+            LogFile(_apiUrl + _routeMap["SearchScript"] + Keyword + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+
             return responseString;
         }
 
@@ -251,10 +336,31 @@ namespace Primus
 
         public async Task<string> CashPosition(string client_id)
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             //var url = (_apiUrl + _routeMap["CashPosition"] + client_id + "&type=all");
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["CashPosition"] + client_id + "&type=all");
             var responseString = await response.Content.ReadAsStringAsync();
+            stopwatch.Stop();
+            LogFile(_apiUrl + _routeMap["CashPosition"] + client_id + "&type=all" + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+
             return responseString;
+        }
+
+        public static void LogFile(string item)
+        {
+            try
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append(item);
+                sb.Append(Environment.NewLine);
+                File.AppendAllText(path , sb.ToString());
+                sb.Clear();
+            }
+            catch(Exception ex)
+            {
+
+            }
         }
 
         #endregion
