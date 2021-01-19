@@ -46,14 +46,14 @@ namespace Primus
             { "ModifyOrder", "v1/orders"},
             { "CancelOrder", "v1/orders"},//   /omsOrderNum?client_id="
             {"SearchScript", "v1/search?key="},
-            {"CashPosition","v1/funds/view?client_id=" },
+            {"CashPosition","v2/funds/view?client_id=" },
             
         };
         #endregion
 
         public PrimusApi(Uri baseurl)
         {
-            _apiUrl = baseurl.AbsoluteUri + "/api/";
+            _apiUrl = baseurl.AbsoluteUri + "api/";
             _httpClient = new HttpClient();
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
@@ -338,7 +338,6 @@ namespace Primus
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            //var url = (_apiUrl + _routeMap["CashPosition"] + client_id + "&type=all");
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["CashPosition"] + client_id + "&type=all");
             var responseString = await response.Content.ReadAsStringAsync();
             stopwatch.Stop();
