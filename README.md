@@ -8,7 +8,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-* Please refer the document http://primusapi.tradelab.in/api_tradelab
+* Please refer the document http://primusapi.tradelab.in/webapi/
 * The API uses oauth2 protocol . You will need following to get started -(Please contact your broker team to get these details)
 ```
 appID 
