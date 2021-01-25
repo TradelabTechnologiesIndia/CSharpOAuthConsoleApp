@@ -64,6 +64,10 @@ namespace PrimusConsoleApp
             Global.LoginId = login.CLientId;
             _octopusInstance = new Octopus(Global.AuthToken, Global.LoginId, new Uri(base_url).Host);
             _octopusInstance.MarketDataSource.PriceUpdateEvent += MarketDataSource_PriceUpdateEvent;
+            _octopusInstance.MarketDataSource.SubscribeOrderTradeUpdates(Global.LoginId, "web");
+            _octopusInstance.MarketDataSource.OrderUpdateEvent += MarketDataSource_OrderUpdateEvent;
+            _octopusInstance.MarketDataSource.TradeUpdateEvent += MarketDataSource_TradeUpdateEvent;
+
             while (true)
             {
                 Console.WriteLine("## Press following keys to perform activities ## \n " +
@@ -309,6 +313,22 @@ namespace PrimusConsoleApp
             public int TradeVolume;
         };
         #endregion
+
+        #region Order and Trade updates
+        private static void MarketDataSource_TradeUpdateEvent(TradeUpdate tradeUpdate)
+        {
+            Console.WriteLine("Client Id " + tradeUpdate.ClientId + " Product Type " + tradeUpdate.Product + " Order Type " + tradeUpdate.OrderType + " Trade Price " + tradeUpdate.TradePrice + " Traded Qty " + tradeUpdate.TradeQuantity + " Filled Qty " + tradeUpdate.FilledQty);
+        }
+
+        private static void MarketDataSource_OrderUpdateEvent(OrderUpdate orderDetail)
+        {
+            if (orderDetail.OrderStatus != "ACCEPTED")
+            {
+                Console.WriteLine(orderDetail.OrderStatus + " for Client Id " + orderDetail.ClientId + " Product Type " + orderDetail.Product + " Order Type " + orderDetail.OrderType + " Price " + orderDetail.Price + " Avg Price " + orderDetail.AverageTradePrice + " Trigger Price " + orderDetail.TriggerPrice + " Qty " + orderDetail.Quantity + " Disc Qty " + orderDetail.DisclosedQuantity);
+            }
+        }
+        #endregion
+
     }
 
 }

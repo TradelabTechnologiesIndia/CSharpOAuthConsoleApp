@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -7,6 +8,8 @@ using WebSocketSharp;
 namespace Primus
 {
     public delegate void PriceUpdateDelegate(FullMarketTick data);
+    public delegate void OrderUpdateDelegate(OrderUpdate orderUpdate);
+    public delegate void TradeUpdateDelegate(TradeUpdate tradeUpdate);
 
 
     public class MarketTicker
@@ -41,6 +44,20 @@ namespace Primus
             handler?.Invoke(price);
         }
 
+        public event OrderUpdateDelegate OrderUpdateEvent;
+        private void OnOrderUpdateReceive(OrderUpdate orderUpdate)
+        {
+            var handler = OrderUpdateEvent;
+            handler?.Invoke(orderUpdate);
+        }
+
+        public event TradeUpdateDelegate TradeUpdateEvent;
+        private void OnTradeUpdateReceive(TradeUpdate tradeUpdate)
+        {
+            var handler = TradeUpdateEvent;
+            handler?.Invoke(tradeUpdate);
+        }
+
         //public event SnapQouteDataDelegate SnapQuoteDataUpdateEvent;
         //private void OnSnapQuoteUpdateEvent(SnapQuote snap)
         //{
@@ -48,8 +65,18 @@ namespace Primus
         //    handler?.Invoke(snap);
         //}
 
+        public struct RequestStruct
+        {
+            public string a;
+            public List<string> v;
+            public string m;
+        }
+
         #endregion
 
+
+        private string _loginId;
+        private string _deviceType;
         public MarketTicker(string baseurl, bool reconnect = true, int reconnectInterval = 5, int reconnectTries = 5000, bool debug = false)
         {
             _debug = debug;
@@ -319,6 +346,24 @@ namespace Primus
             var msg = "{\"a\": \"unsubscribe\",\"v\":[" + unsubscriptionItem + "], \"m\": \"snapquote\"}";
             _webSocket.Send(msg);
         }
+
+
+        public void SubscribeOrderTradeUpdates(string loginId, string deviceType)
+        {
+            _loginId = loginId;
+            _deviceType = deviceType;
+            RequestStruct req = new RequestStruct();
+            req.a = "subscribe";
+            req.v = new List<string>
+            {
+                loginId,
+                deviceType
+            };
+            req.m = "updates";
+            var json = JsonConvert.SerializeObject(req);
+            _webSocket.Send(json);
+        }
+
         #endregion
 
         #endregion
@@ -332,7 +377,10 @@ namespace Primus
             System.Diagnostics.Debug.WriteLine("Socket connected");
             OnConnectionUpdateEvent(true, "Socket Connected");
             if (_subscriptionMap.Keys.Count > 0)
+            {
                 ReSubscribeFromMap();
+                SubscribeOrderTradeUpdates(_loginId, _deviceType);
+            }
             //CreateChannelAndSubscribeFromMap();
         }
 
@@ -374,7 +422,13 @@ namespace Primus
                 case 3:
                     ReadSnapQuote(data, ref offset);
                     break;
-               
+                case 50:
+                    ReadOrderUpdateData(data, ref offset);
+                    break;
+                case 51:
+                    ReadTradeUpdateData(data, ref offset);
+                    break;
+
                 default:
                     break;
                     //}
@@ -404,6 +458,62 @@ namespace Primus
             Marshal.FreeHGlobal(snapPacket);
             var val = Twiddle(snapData);
             //OnSnapQuoteUpdateEvent(val);
+        }
+
+        private void ReadOrderUpdateData(byte[] data, ref int offset)
+        {
+            string orderUpdateJsonPacket = Encoding.UTF8.GetString(data.SubArray(5, data.Length - 5));
+
+            var deserializedPacket = JsonConvert.DeserializeObject<Dictionary<string, object>>(orderUpdateJsonPacket);
+
+            OrderUpdate order = new OrderUpdate();
+            order.AverageTradePrice = Convert.ToDouble(deserializedPacket["average_price"]);
+            order.ClientId = deserializedPacket["client_id"].ToString();
+            order.DisclosedQuantity = Convert.ToInt32(deserializedPacket["disclosed_quantity"]);
+            order.Exchange = deserializedPacket["exchange"].ToString();
+            order.ExchangeOrderId = deserializedPacket["exchange_order_id"].ToString();
+            order.ExchangeTime = Convert.ToInt64(deserializedPacket["exchange_time"]);
+            order.FilledQuantity = Convert.ToInt32(deserializedPacket["filled_quantity"]);
+            order.InstrumentToken = Convert.ToInt32(deserializedPacket["instrument_token"]);
+            order.LoginId = deserializedPacket["login_id"].ToString();
+            order.OmsOrderId = deserializedPacket["oms_order_id"].ToString();
+            order.OrderEntryTime = Convert.ToInt64(deserializedPacket["order_entry_time"]);
+            order.OrderStatus = deserializedPacket["order_status"].ToString();
+            order.OrderType = deserializedPacket["order_type"].ToString();
+            order.Price = Convert.ToDouble(deserializedPacket["price"]);
+            order.Product = deserializedPacket["product"].ToString();
+            order.Quantity = Convert.ToInt32(deserializedPacket["quantity"]);
+            order.RejectionReason = deserializedPacket["rejection_reason"].ToString();
+            order.RemainingQuantity = Convert.ToInt32(deserializedPacket["remaining_quantity"]);
+            order.TradingSymbol = deserializedPacket["trading_symbol"].ToString();
+            order.TriggerPrice = Convert.ToDouble(deserializedPacket["trigger_price"]);
+            order.userOrderId = deserializedPacket["user_order_id"].ToString();
+            order.Validity = deserializedPacket["validity"].ToString();
+            order.OrderSide = deserializedPacket["order_side"].ToString();
+            order.Procli = deserializedPacket["pro_cli"].ToString();
+            order.nnfid = deserializedPacket["nnfid"].ToString();
+            OnOrderUpdateReceive(order);
+        }
+
+        private void ReadTradeUpdateData(byte[] data, ref int offset)
+        {
+            string tradeUpdateJsonPacket = Encoding.UTF8.GetString(data.SubArray(5, data.Length - 5));
+            var deserializedPacket = JsonConvert.DeserializeObject<Dictionary<string, object>>(tradeUpdateJsonPacket);
+            TradeUpdate trade = new TradeUpdate();
+            trade.Exchange = deserializedPacket["exchange"].ToString();
+            trade.Product = deserializedPacket["product"].ToString();
+            trade.TradingSymbol = deserializedPacket["trading_symbol"].ToString();
+            trade.TradePrice = Convert.ToDouble(deserializedPacket["trade_price"]);
+            trade.TradeNumber = deserializedPacket["trade_id"].ToString();
+            trade.OrderSide = deserializedPacket["order_side"].ToString();
+            trade.OmsOrderId = deserializedPacket["oms_order_id"].ToString();
+            trade.LoginId = deserializedPacket["login_id"].ToString();
+            trade.InstrumentToken = Convert.ToInt32(deserializedPacket["instrument_token"]);
+            trade.TradeQuantity = Convert.ToInt32(deserializedPacket["filled_quantity"]);
+            trade.TradeTime = Convert.ToInt64(deserializedPacket["exchange_time"]);
+            trade.ExchangeOrderId = deserializedPacket["exchange_order_id"].ToString();
+            trade.ClientId = deserializedPacket["client_id"].ToString();
+            OnTradeUpdateReceive(trade);
         }
 
         public static byte[] FromHex(string hex)
@@ -644,5 +754,76 @@ namespace Primus
     public enum MarketDataType
     {
         MarketData
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [Serializable]
+    public class OrderUpdate
+    {
+        public string userOrderId;
+        public int RejectionCode;
+        public double TriggerPrice;
+        public int RemainingQuantity;
+        public string OrderType;
+        public string OrderSide;
+        public string OrderStatus;
+        public long ExchangeTime;
+        public string Device;
+        public long OrderEntryTime;
+        public string TradingSymbol;
+        public int FilledQuantity;
+        public double Deposit;
+        public double Price;
+        public int InstrumentToken;
+        public string LoginId;
+        public string ClientId;
+        public string ExchangeOrderId;
+        public string Validity;
+        public int Quantity;
+        public double TradePrice;
+        public string RejectionReason;
+        public string Exchange;
+        public int DisclosedQuantity;
+        public double AverageTradePrice;
+        public string OmsOrderId;
+        public string Product;
+        public string Procli;
+        public string nnfid;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [Serializable]
+    public class TradeUpdate
+    {
+        public string ClientId;
+        public string BookType;
+        public string BrokerId;
+        public string DisclosedVaol;
+        public string DisclosedVolRemaining;
+        public string Exchange;
+        public string ExchangeOrderId;
+        public string ExchangeTime;
+        public int FillNumber;
+        public int FilledQty;
+        public string GoodTillDate;
+        public int InstrumentToken;
+        public string LoginId;
+        public string OmsOrderId;
+        public string OrderEntryTime;
+        public double OrderPrice;
+        public string OrderSide;
+        public string OrderType;
+        public string OriginalVol;
+        public string PAN;
+        public string propOrClient;
+        public string Product;
+        public int RemQty;
+        public string TradeNumber;
+        public double TradePrice;
+        public int TradeQuantity;
+        public long TradeTime;
+        public string TradingSymbol;
+        public double TriggerPrice;
+        public string VolFilledToday;
     }
 }
