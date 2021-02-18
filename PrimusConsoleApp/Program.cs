@@ -17,10 +17,10 @@ namespace PrimusConsoleApp
 {
     class Program
     {
-        private static string AppID = "appid"; // Get from your broker
+        private static string AppID = "app_id"; // Get from your broker
         private static string AppSecret = "app_secret"; // Get from your broker
         private static string redirect_url = "http://127.0.0.1/";  // You can create your own and ask your broker to update
-        private static string base_url = "https://example.com/"; // Get from your broker;it will be in the form of https://api.example.com
+        private static string base_url = "https://api.example.com/"; // Get from your broker;it will be in the form of https://api.example.com
         private static string scope = "orders holdings";
         private static readonly object _lock = new object();
         private static string url = null;
@@ -85,7 +85,8 @@ namespace PrimusConsoleApp
                 try
 
                 {
-                    var ch = Convert.ToInt16(Console.ReadLine());
+                    
+                    var ch = Convert.ToInt32(Console.ReadLine());
                     switch (ch)
                     {
                         case 0:
@@ -194,12 +195,11 @@ namespace PrimusConsoleApp
                                 Console.WriteLine(response9["data"]);
                             }
                             break;
-
                     }
                 }
                 catch(Exception e)
                 {
-                    Console.WriteLine("Invalid input ");
+                    PrimusApi.LogFile(DateTime.Now + " : " + "Invalid input : " + e.Message);
                     Environment.Exit(0);
                 }
 

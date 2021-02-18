@@ -112,7 +112,7 @@ namespace Primus
                 var response = await _httpClient.PostAsync(_apiUrl + _routeMap["PlaceOrder"], byteContent);
                 var responseString = await response.Content.ReadAsStringAsync();
                 stopwatch.Stop();
-                LogFile(_apiUrl + _routeMap["PlaceOrder"] + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+                LogFile(DateTime.Now + "  :  " + _apiUrl + _routeMap["PlaceOrder"] + "  : " + stopwatch.ElapsedMilliseconds + "ms");
                 // OnOrderReply(responseString);
                 return responseString;
             }
@@ -146,7 +146,7 @@ namespace Primus
             var response = await _httpClient.PutAsync(_apiUrl + _routeMap["ModifyOrder"], byteContent);
             var responseString = await response.Content.ReadAsStringAsync();
             stopwatch.Stop();
-            LogFile(_apiUrl + _routeMap["ModifyOrder"] + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+            LogFile(DateTime.Now + "  :  " + _apiUrl + _routeMap["ModifyOrder"] + "  : " + stopwatch.ElapsedMilliseconds + "ms");
 
             return responseString;
         }
@@ -159,7 +159,7 @@ namespace Primus
             var response = await _httpClient.DeleteAsync(_apiUrl + _routeMap["CancelOrder"] + values);
             var responseString = await response.Content.ReadAsStringAsync();
             stopwatch.Stop();
-            LogFile(_apiUrl + _routeMap["CancelOrder"] + values + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+            LogFile(DateTime.Now + "  :  " + _apiUrl + _routeMap["CancelOrder"] + values + "  : " + stopwatch.ElapsedMilliseconds + "ms");
 
             return responseString;
         }
@@ -172,7 +172,7 @@ namespace Primus
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["PendingOrders"]+ client_id);
             var responseString = await response.Content.ReadAsStringAsync();
             stopwatch.Stop();
-            LogFile(_apiUrl + _routeMap["PendingOrders"] + client_id + "  : " + stopwatch.ElapsedMilliseconds + "ms" );
+            LogFile(DateTime.Now + "  :  " + _apiUrl + _routeMap["PendingOrders"] + client_id + "  : " + stopwatch.ElapsedMilliseconds + "ms" );
             return responseString;
         }
         public async Task<string> CompletedOrderBookAsync(string client_id)
@@ -183,7 +183,7 @@ namespace Primus
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["CompletedOrders"] + client_id);
             var responseString = await response.Content.ReadAsStringAsync();
             stopwatch.Stop();
-            LogFile(_apiUrl + _routeMap["CompletedOrders"] + client_id + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+            LogFile(DateTime.Now + "  :  " + _apiUrl + _routeMap["CompletedOrders"] + client_id + "  : " + stopwatch.ElapsedMilliseconds + "ms");
             return responseString;
         }
 
@@ -194,7 +194,7 @@ namespace Primus
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["Profile"] + client_id);
             var responseString = await response.Content.ReadAsStringAsync();
             stopwatch.Stop();
-            LogFile(_apiUrl + _routeMap["Profile"] + client_id + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+            LogFile(DateTime.Now + "  :  " + _apiUrl + _routeMap["Profile"] + client_id + "  : " + stopwatch.ElapsedMilliseconds + "ms");
 
             return responseString;
         }
@@ -207,7 +207,7 @@ namespace Primus
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["OrderHistory"] +  values);
             var responseString = await response.Content.ReadAsStringAsync();
             stopwatch.Stop();
-            LogFile(_apiUrl + _routeMap["OrderHistory"] + values + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+            LogFile(DateTime.Now + "  :  " + _apiUrl + _routeMap["OrderHistory"] + values + "  : " + stopwatch.ElapsedMilliseconds + "ms");
 
             return responseString;
         }
@@ -219,7 +219,7 @@ namespace Primus
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["Trades"] + client_id);
             var responseString = await response.Content.ReadAsStringAsync();
             stopwatch.Stop();
-            LogFile(_apiUrl + _routeMap["Trades"] + client_id + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+            LogFile(DateTime.Now + "  :  " + _apiUrl + _routeMap["Trades"] + client_id + "  : " + stopwatch.ElapsedMilliseconds + "ms");
 
             return responseString;
         }
@@ -231,7 +231,7 @@ namespace Primus
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["DayPositions"] + client_id);
             var responseString = await response.Content.ReadAsStringAsync();
             stopwatch.Stop();
-            LogFile(_apiUrl + _routeMap["DayPositions"] + client_id + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+            LogFile(DateTime.Now + "  :  " + _apiUrl + _routeMap["DayPositions"] + client_id + "  : " + stopwatch.ElapsedMilliseconds + "ms");
 
             return responseString;
         }
@@ -243,7 +243,7 @@ namespace Primus
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["NetPositions"] + client_id);
             var responseString = await response.Content.ReadAsStringAsync();
             stopwatch.Stop();
-            LogFile(_apiUrl + _routeMap["NetPositions"] + client_id + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+            LogFile(DateTime.Now + "  :  "+_apiUrl + _routeMap["NetPositions"] + client_id + "  : " + stopwatch.ElapsedMilliseconds + "ms");
 
             return responseString;
         }
@@ -256,7 +256,7 @@ namespace Primus
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["Holdings"] + client_id);
             var responseString = await response.Content.ReadAsStringAsync();
             stopwatch.Stop();
-            LogFile(_apiUrl + _routeMap["Holdings"] + client_id + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+            LogFile(DateTime.Now + "  :  "+_apiUrl + _routeMap["Holdings"] + client_id + "  : " + stopwatch.ElapsedMilliseconds + "ms");
 
             return responseString;
         }
@@ -268,7 +268,7 @@ namespace Primus
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["Cash"] + client_id);
             var responseString = await response.Content.ReadAsStringAsync();
             stopwatch.Stop();
-            LogFile(_apiUrl + _routeMap["Cash"] + client_id + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+            LogFile(DateTime.Now + "  :  " + _apiUrl + _routeMap["Cash"] + client_id + "  : " + stopwatch.ElapsedMilliseconds + "ms");
 
             return responseString;
         }
@@ -280,7 +280,7 @@ namespace Primus
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["Search"] + key);
             var responseString = await response.Content.ReadAsStringAsync();
             stopwatch.Stop();
-            LogFile(_apiUrl + _routeMap["Search"] + key + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+            LogFile(DateTime.Now + "  :  " + _apiUrl + _routeMap["Search"] + key + "  : " + stopwatch.ElapsedMilliseconds + "ms");
 
             return responseString;
         }
@@ -293,7 +293,7 @@ namespace Primus
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["Scripinfo"] + values);
             var responseString = await response.Content.ReadAsStringAsync();
             stopwatch.Stop();
-            LogFile(_apiUrl + _routeMap["Scripinfo"] + values + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+            LogFile(DateTime.Now + "  :  " + _apiUrl + _routeMap["Scripinfo"] + values + "  : " + stopwatch.ElapsedMilliseconds + "ms");
 
             //OnScripinfoReply(responseString);
             return responseString;
@@ -307,7 +307,7 @@ namespace Primus
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["MarketData"] + values);
             var responseString = await response.Content.ReadAsStringAsync();
             stopwatch.Stop();
-            LogFile(_apiUrl + _routeMap["MarketData"] + values + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+            LogFile(DateTime.Now + "  :  " + _apiUrl + _routeMap["MarketData"] + values + "  : " + stopwatch.ElapsedMilliseconds + "ms");
 
             //OnScripinfoReply(responseString);
             return responseString;
@@ -320,7 +320,7 @@ namespace Primus
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["SearchScript"] + Keyword);
             var responseString = await response.Content.ReadAsStringAsync();
             stopwatch.Stop();
-            LogFile(_apiUrl + _routeMap["SearchScript"] + Keyword + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+            LogFile(DateTime.Now + "  :  " + _apiUrl + _routeMap["SearchScript"] + Keyword + "  : " + stopwatch.ElapsedMilliseconds + "ms");
 
             return responseString;
         }
@@ -341,7 +341,7 @@ namespace Primus
             var response = await _httpClient.GetAsync(_apiUrl + _routeMap["CashPosition"] + client_id + "&type=all");
             var responseString = await response.Content.ReadAsStringAsync();
             stopwatch.Stop();
-            LogFile(_apiUrl + _routeMap["CashPosition"] + client_id + "&type=all" + "  : " + stopwatch.ElapsedMilliseconds + "ms");
+            LogFile(DateTime.Now + "  :  " + _apiUrl + _routeMap["CashPosition"] + client_id + "&type=all" + "  : " + stopwatch.ElapsedMilliseconds + "ms");
 
             return responseString;
         }

@@ -374,14 +374,13 @@ namespace Primus
         {
             _timer.Start();
             _retryCount = 0;
-            System.Diagnostics.Debug.WriteLine("Socket connected");
+            PrimusApi.LogFile(DateTime.Now + " : " + "Socket connected");
             OnConnectionUpdateEvent(true, "Socket Connected");
             if (_subscriptionMap.Keys.Count > 0)
             {
                 ReSubscribeFromMap();
                 SubscribeOrderTradeUpdates(_loginId, _deviceType);
             }
-            //CreateChannelAndSubscribeFromMap();
         }
 
         private void _timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
@@ -392,7 +391,7 @@ namespace Primus
 
         private void OnSocketClose(object sender, CloseEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine("Socket closed");
+            PrimusApi.LogFile(DateTime.Now + " : " + "Socket closed");
             _timer.Stop();
             OnConnectionUpdateEvent(false, "Socket Closed");
             System.Threading.Thread.Sleep(1000);
@@ -401,7 +400,7 @@ namespace Primus
 
         private void OnSocketError(object sender, ErrorEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine("Socket Error occurred");
+            PrimusApi.LogFile(DateTime.Now + " : " + "Socket Error occurred" + e.Message);
             OnConnectionUpdateEvent(IsConnected, e.Message);
         }
 
