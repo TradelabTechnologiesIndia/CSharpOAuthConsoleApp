@@ -422,9 +422,11 @@ namespace Primus
                     ReadSnapQuote(data, ref offset);
                     break;
                 case 50:
+                case 11:
                     ReadOrderUpdateData(data, ref offset);
                     break;
                 case 51:
+                case 12:
                     ReadTradeUpdateData(data, ref offset);
                     break;
 
